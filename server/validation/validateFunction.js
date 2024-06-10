@@ -12,6 +12,18 @@ const validateSchema = (schema) => (req, res, next) => {
     next();
 };
 
+const validateVideoSchema = (schema) => (req, res, next) => {
+    console.log("Validating request body data...");
+
+    const { error } = schema.validate(req.file);
+    if (error) {
+        const errorMessage = error.details.map(detail => detail.message).join(', ');
+        return res.status(400).json({ status_code: 400, message: errorMessage });
+    }
+    
+  next();
+};
+
 // Joi validation schema
 const userSchema = Joi.object({
     email: Joi.string().email().required().messages({
@@ -20,9 +32,18 @@ const userSchema = Joi.object({
     })
 });
 
+const videoUploadSchema = Joi.object({
+    title: Joi.string().required().messages({
+      'string.empty': 'Title is required: Cannot be empty',
+      'any.required': 'Title is required'
+    })
+});
+
 // Validating request body data
 const userRegisterValidation = validateSchema(userSchema);
+const uploadVideoValidation = validateVideoSchema(videoUploadSchema);
 
 module.exports = {
     userRegisterValidation,
+    uploadVideoValidation
 };

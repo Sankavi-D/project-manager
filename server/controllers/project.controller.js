@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Video = require('../models/video');
 
 const userRegister =  async (req, res) => {
     try {
@@ -35,9 +36,31 @@ const createProject = async (req, res) => {
     }
 };
 
+const uploadVideoHandler = async (req, res) => {
+  try {
+    console.log("DB Video storing function initiated");
+    const user = req.user;
+    const { title } = req.body;
+    const video = {
+      email: user._id,
+      videoName: req.file.filename,
+      title: title
+    };
+
+    const savedVideo = await Video.create(video);
+
+    console.log("Video saved successfully:", savedVideo);
+    res.status(201).json({ status_code: 201, message: 'Video uploaded successfully', uploadedVideo: savedVideo });
+  } catch (error) {
+    console.log("Error on storing video in the database:", error);
+    res.status(500).json({ status_code: 500, message: error.message });
+  }
+};
+
 module.exports = {
     userRegister,
-    createProject
+    createProject,
+    uploadVideoHandler
 };
   
   
