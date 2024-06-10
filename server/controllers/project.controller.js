@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Project = require('../models/project');
 const Video = require('../models/video');
 
 const userRegister =  async (req, res) => {
@@ -24,16 +25,24 @@ const userRegister =  async (req, res) => {
 const createProject = async (req, res) => {
     try {
         console.log('Creating project name');
-        const { email, projectName } = req.body;
-        const user = await User.findOneAndUpdate(
-            { email },
-            { $push: { projects: projectName } },
-            { new: true }
-            );
-        res.status(201).json({ status_code: 201, message: 'Project name created successfully', projectName });
+        const { userId, projectName } = req.body;
+        const project = new Project({ user: userId, projects: projectName });
+        await project.save();
+        res.status(201).json({ status_code: 201, message: 'Project name created successfully', project });
     } catch (error) {
         res.status(500).json({ error: 'Server error' });
     }
+};
+
+const getProjects = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const projects = await Project.find({ user: userId });
+    res.json(projects);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching projects' });
+  }
 };
 
 const uploadVideoHandler = async (req, res) => {
@@ -57,10 +66,32 @@ const uploadVideoHandler = async (req, res) => {
   }
 };
 
+const updateProjectTranscript = async (req, res) => {
+  const { projectId } = req.params;
+  const { transcript } = req.body;
+
+  try {
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    project.transcript = transcript;
+    await project.save();
+
+    res.json(project);
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating project transcript' });
+  }
+};
+
 module.exports = {
     userRegister,
     createProject,
-    uploadVideoHandler
+    getProjects,
+    uploadVideoHandler,
+    updateProjectTranscript
 };
   
   

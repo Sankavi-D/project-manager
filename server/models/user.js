@@ -8,7 +8,11 @@ const userSchema = new mongoose.Schema({
     },
     projects: [{
         type: String
-    }]
+    }],
+    transcript: {
+        type: String,
+        default: '',  // Default to an empty string if no transcript is provided
+    }
 });
 
 module.exports = mongoose.model('User', userSchema);
