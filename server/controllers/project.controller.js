@@ -30,7 +30,7 @@ const createProject = async (req, res) => {
         await project.save();
         res.status(201).json({ status_code: 201, message: 'Project name created successfully', project });
     } catch (error) {
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ status_code: 500, error: 'Server error' });
     }
 };
 
@@ -39,19 +39,19 @@ const getProjects = async (req, res) => {
 
   try {
     const projects = await Project.find({ user: userId });
-    res.json(projects);
+    res.status(201).json({ status_code: 201, message: 'Project details', projects });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching projects' });
+    res.status(500).json({ status_code: 500, message: 'Error fetching projects' });
   }
 };
 
 const uploadVideoHandler = async (req, res) => {
   try {
     console.log("DB Video storing function initiated");
-    const user = req.user;
-    const { title } = req.body;
+    // const user = req.user;
+    const { userId, title } = req.body;
     const video = {
-      email: user._id,
+      userId: userId,
       videoName: req.file.filename,
       title: title
     };
@@ -80,9 +80,9 @@ const updateProjectTranscript = async (req, res) => {
     project.transcript = transcript;
     await project.save();
 
-    res.json(project);
+    res.status(201).json({ status_code: 201, message: 'Project transcript saved successfully', project });
   } catch (error) {
-    res.status(500).json({ message: 'Error updating project transcript' });
+    res.status(500).json({ status_code: 500, message: 'Error updating project transcript' });
   }
 };
 

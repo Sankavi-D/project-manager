@@ -32,7 +32,22 @@ const userSchema = Joi.object({
     })
 });
 
+const projectNameSchema = Joi.object({
+    userId: Joi.string().required().messages({
+      'string.userId': `"userId" must be a valid id`,
+      'any.required': `"userId" is a required field`  
+    }),
+    projectName: Joi.string().required().messages({
+        'string.userId': `"projectName" must be a valid name`,
+        'any.required': `"projectName" is a required field`  
+      })
+})
+
 const videoUploadSchema = Joi.object({
+    userId: Joi.string().required().messages({
+        'string.userId': `"userId" must be a valid id`,
+        'any.required': `"userId" is a required field`  
+      }),
     title: Joi.string().required().messages({
       'string.empty': 'Title is required: Cannot be empty',
       'any.required': 'Title is required'
@@ -41,9 +56,11 @@ const videoUploadSchema = Joi.object({
 
 // Validating request body data
 const userRegisterValidation = validateSchema(userSchema);
+const projectNameValidation = validateSchema(projectNameSchema);
 const uploadVideoValidation = validateVideoSchema(videoUploadSchema);
 
 module.exports = {
     userRegisterValidation,
+    projectNameValidation,
     uploadVideoValidation
 };
